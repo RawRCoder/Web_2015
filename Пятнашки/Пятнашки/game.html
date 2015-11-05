@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>...</title>
+    <meta charset="utf-8"/>
+    <style>
+        .cell {
+            width: 32px;
+            height: 32px;
+            background-color: green;
+            color: white;
+            text-align: center;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .empty-cell {
+            width: 32px;
+            height: 32px;
+            background-color: salmon;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+    </style>
+</head>
+<body onload="start()">
+<table>
+    <tr><td id="0_0" class="empty-cell"></td> <td id="1_0" class="empty-cell"></td> <td id="2_0" class="empty-cell"></td> <td id="3_0" class="empty-cell"></td></tr>
+    <tr><td id="0_1" class="empty-cell"></td> <td id="1_1" class="empty-cell"></td> <td id="2_1" class="empty-cell"></td> <td id="3_1" class="empty-cell"></td></tr>
+    <tr><td id="0_2" class="empty-cell"></td> <td id="1_2" class="empty-cell"></td> <td id="2_2" class="empty-cell"></td> <td id="3_2" class="empty-cell"></td></tr>
+    <tr><td id="0_3" class="empty-cell"></td> <td id="1_3" class="empty-cell"></td> <td id="2_3" class="empty-cell"></td> <td id="3_3" class="empty-cell"></td></tr>
+</table>
+<script>
+    function getNode(x, y) {
+        return document.getElementById(x + "_" + y);
+    }
+
+    function start() {
+        for (var x = 0; x < 4; ++x) {
+            for (var y = 0; y < 4; ++y) {
+                getNode(x, y).addEventListener("click", handleClick);
+            }
+        }
+        for (var i = 1; i < 16; ++i) {
+            var x = Math.round(Math.random() * 3);
+            var y = Math.round(Math.random() * 3);
+            var node = getNode(x, y);
+            while (node.innerHTML !== "") {
+                x = Math.round(Math.random() * 3);
+                y = Math.round(Math.random() * 3);
+                node = getNode(x, y);
+            }
+            node.innerHTML = i;
+            node.className = "cell";
+        }
+        // Internet Explorer
+        if ("onhelp" in window)
+            window.onhelp = function () {
+                showHelp();
+                return false;
+            }
+            // Others
+        else {
+            var cancelKeypress = false;
+            document.onkeydown = function (evt) {
+                cancelKeypress = (evt.keyCode == 112);
+                if (cancelKeypress) {  // F1 was pressed
+                    showHelp();
+                    return false;
+                }
+                return true;
+            }
+
+            // Additional step required for Opera
+            document.onkeypress = function (evt) {
+                return (!cancelKeypress);
+            }
+        }
+        function showHelp() {
+            alert("FUCKYOU!");
+        }
+    }
+
+    function clearSelection() {
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else { // старый IE
+            document.selection.empty();
+        }
+    }
+
+    function handleClick(event) {
+        clearSelection();
+        console.log(event);
+        if (event.target.className === "empty-cell")
+            return;
+        var coords = event.target.id.split('_');
+        var x = parseInt(coords[0]);
+        var y = parseInt(coords[1]);
+        var node = getNode(x - 1, y);
+        if (node && node.innerHTML === "") {
+            swap(node, event.target);
+            return;
+        }
+        node = getNode(x + 1, y);
+        if (node && node.innerHTML === "") {
+            swap(node, event.target);
+            return;
+        }
+        node = getNode(x, y-1);
+        if (node && node.innerHTML === "") {
+            swap(node, event.target);
+            return;
+        }
+        node = getNode(x, y + 1);
+        if (node && node.innerHTML === "") {
+            swap(node, event.target);
+            return;
+        }
+    }
+
+    function swap(a, b) {
+        a.className = "cell";
+        b.className = "empty-cell";
+        a.innerHTML = b.innerHTML;
+        b.innerHTML = "";
+        
+    }
+</script>
+</body>
+</html>
